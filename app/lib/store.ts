@@ -49,7 +49,7 @@ export const useViewHistory = create<ViewHistoryStore>()(
     }),
     {
       name: "view-history-storage",
-      storage: createJSONStorage(() => localStorage), // 👈 Rất quan trọng trong App Router
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

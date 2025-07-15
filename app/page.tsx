@@ -22,6 +22,8 @@ import Loading from "./loading";
 import { Toaster } from "@/components/ui/toaster";
 import { useViewHistory } from "./lib/store";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,13 +38,12 @@ export default function HomePage() {
   const { favorites } = useFavorites();
   const { toast } = useToast();
   const { viewHistory, addToViewHistory } = useViewHistory();
+  const { t, i18n } = useTranslation();
 
-  // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Filter products when search term or price filter changes
   useEffect(() => {
     filterProducts();
   }, [products, searchTerm, priceFilter]);
@@ -62,7 +63,6 @@ export default function HomePage() {
   const filterProducts = () => {
     let filtered = products;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (product) =>
@@ -71,7 +71,6 @@ export default function HomePage() {
       );
     }
 
-    // Filter by price
     if (priceFilter !== "all") {
       filtered = filtered.filter((product) => {
         switch (priceFilter) {
@@ -97,7 +96,7 @@ export default function HomePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          favoriteIds: favorites.map((item) => item.id), // 👈 gửi danh sách favorite
+          favoriteIds: favorites.map((item) => item.id),
         }),
       });
 
@@ -123,7 +122,7 @@ export default function HomePage() {
 
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
-    // Add to view history
+
     const handleViewDetails = (product: Product) => {
       setSelectedProduct(product);
       addToViewHistory(product);
@@ -139,19 +138,19 @@ export default function HomePage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            {/* Logo + Brand name */}
             <Link href="/" className="flex items-center gap-3">
               <Image
-                src="/logo.png" // Đảm bảo đã có file tại public/logo.png
+                src="/logo.png"
                 alt="Cabi Edu Logo"
                 width={40}
                 height={40}
-                className="rounded-full" // Có thể đổi thành rounded-full nếu là logo tròn
+                className="rounded-full"
               />
-              <span className="text-2xl font-bold text-gray-900">Cabi Edu</span>
+              <span className="text-2xl font-bold text-gray-900">
+                {t("title")}
+              </span>
             </Link>
 
-            {/* Navigation buttons */}
             <div className="flex items-center gap-2">
               <Link href="/history">
                 <Button
@@ -159,7 +158,7 @@ export default function HomePage() {
                   className="flex items-center gap-2 bg-transparent"
                 >
                   <Clock className="h-4 w-4" />
-                  History ({viewHistory.length})
+                  {t("history")} ({viewHistory.length})
                 </Button>
               </Link>
               <Link href="/favorites">
@@ -168,7 +167,7 @@ export default function HomePage() {
                   className="flex items-center gap-2 bg-transparent"
                 >
                   <Heart className="h-4 w-4" />
-                  Favorites ({favorites.length})
+                  {t("favorites")} ({favorites.length})
                 </Button>
               </Link>
               <Link href="/chat">
@@ -177,22 +176,22 @@ export default function HomePage() {
                   className="flex items-center gap-2 bg-transparent"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  AI Chat
+                  {t("chat")}
                 </Button>
               </Link>
+              <LanguageSwitcher />
             </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filter Section */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search courses, books, documents..."
+                placeholder={t("search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -200,18 +199,17 @@ export default function HomePage() {
             </div>
             <Select value={priceFilter} onValueChange={setPriceFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by price" />
+                <SelectValue placeholder={t("filter_price")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Prices</SelectItem>
-                <SelectItem value="under-500">Under 500K VND</SelectItem>
-                <SelectItem value="500-1000">500K - 1M VND</SelectItem>
-                <SelectItem value="over-1000">Over 1M VND</SelectItem>
+                <SelectItem value="all">{t("all_prices")}</SelectItem>
+                <SelectItem value="under-500">{t("under_500")}</SelectItem>
+                <SelectItem value="500-1000">{t("from_500_to_1m")}</SelectItem>
+                <SelectItem value="over-1000">{t("over_1m")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* AI Suggestions Button */}
           <div className="flex justify-center">
             <Button
               onClick={handleAISuggestions}
@@ -223,18 +221,17 @@ export default function HomePage() {
               ) : (
                 <Sparkles className="h-4 w-4" />
               )}
-              {isSuggesting ? "Loading..." : "Get AI Suggestions"}
+              {isSuggesting ? t("loading") : t("ai_suggestions")}
             </Button>
           </div>
         </div>
 
-        {/* AI Suggestions Section */}
         {showSuggestions && suggestions.length > 0 && (
           <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-purple-600" />
               <h2 className="text-xl font-semibold text-gray-900">
-                AI Recommended for You
+                {t("ai_recommend_title")}
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 truncate">
@@ -253,26 +250,24 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Results Summary */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Showing {filteredProducts.length} of {products.length} educational
-            products
+            {t("showing_products", {
+              count: filteredProducts.length,
+              total: products.length,
+            })}
           </p>
         </div>
 
-        {/* Products Grid */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <Search className="h-16 w-16 mx-auto " />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No products found
+              {t("no_products")}
             </h3>
-            <p className="text-gray-600">
-              Try adjusting your search or filter criteria
-            </p>
+            <p className="text-gray-600">{t("adjust_search")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ClientLayout from "./components/ClientLayout"; // import client wrapper
 
 export const metadata: Metadata = {
   title: "Edu Store",
@@ -12,15 +13,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>{children}</body>
+      <body>
+        <ClientLayout>{children}</ClientLayout>{" "}
+        {/* ✅ Chạy i18n client tại đây */}
+      </body>
     </html>
   );
 }

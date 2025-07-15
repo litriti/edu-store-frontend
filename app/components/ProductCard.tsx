@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Heart, Eye, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,25 +21,25 @@ export default function ProductCard({
   product,
   onViewDetails,
 }: ProductCardProps) {
+  const { t } = useTranslation();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const [imageError, setImageError] = useState(false);
-
+  const { addToViewHistory } = useViewHistory();
   const isFavorite = favorites.some((fav) => fav.id === product.id);
   const { toast } = useToast();
-  const { addToViewHistory } = useViewHistory();
 
   const handleFavoriteToggle = () => {
     if (isFavorite) {
       removeFromFavorites(product.id);
       toast({
-        title: "Removed from favorites",
-        description: `${product.name} has been removed from your favorites.`,
+        title: t("remove_fav_title"),
+        description: t("remove_fav_desc", { name: product.name }),
       });
     } else {
       addToFavorites(product);
       toast({
-        title: "Added to favorites",
-        description: `${product.name} has been added to your favorites.`,
+        title: t("add_fav_title"),
+        description: t("add_fav_desc", { name: product.name }),
       });
     }
   };
@@ -53,9 +54,9 @@ export default function ProductCard({
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
       <div className="relative">
-        <div className="aspect-video relative overflow-hidden ">
+        <div className="aspect-video relative overflow-hidden">
           <Image
-            src={imageError ? "/1.jpg?height=200&width=300" : product.image}
+            src={imageError ? "/1.jpg" : product.image}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -101,7 +102,7 @@ export default function ProductCard({
             ))}
           </div>
           <span className="text-sm text-gray-600">
-            ({product.rating}) • {product.students} students
+            ({product.rating}) • {product.students} {t("students")}
           </span>
         </div>
 
@@ -123,14 +124,14 @@ export default function ProductCard({
       <CardFooter className="p-4 pt-0">
         <Button
           onClick={() => {
-            addToViewHistory(product); // 👈 Ghi vào history khi nhấn
-            onViewDetails(); // Gọi logic mở modal hoặc chuyển trang
+            addToViewHistory(product);
+            onViewDetails();
           }}
           className="w-full flex items-center gap-2 bg-transparent"
           variant="outline"
         >
           <Eye className="h-4 w-4" />
-          View Details
+          {t("view_details")}
         </Button>
       </CardFooter>
     </Card>

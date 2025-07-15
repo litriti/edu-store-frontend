@@ -109,7 +109,6 @@ export default function HistoryPage() {
         )}
       </div>
 
-      {/* Product Detail Modal */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
