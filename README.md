@@ -17,7 +17,8 @@ EduStore là một nền tảng giáo dục thương mại điện tử với c�
 # Clone repo
 ```
 
-git clone
+git clone https://github.com/litriti/edu-store-frontend.git
+
 cd edu-store-frontend
 
 # Cài đặt các thư viện
